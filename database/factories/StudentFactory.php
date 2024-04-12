@@ -2,14 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Khoahoc;
-use App\Models\Lophoc;
+use App\Models\Clas;
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\sinhvien>
- */
-class SinhvienFactory extends Factory
+
+class StudentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -24,8 +22,8 @@ class SinhvienFactory extends Factory
             'email' => fake()->email(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
-            'lophoc_id' => Lophoc::inRandomOrder()->first()->id,
-            'khoahoc_id' => Khoahoc::inRandomOrder()->first()->id,
+            'clas_id' => Clas::inRandomOrder()->first()->id,
+            'course_id' => Course::inRandomOrder()->first()->id,
         ];
     }
 }

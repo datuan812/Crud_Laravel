@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Khoahoc;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -12,7 +12,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $course = Khoahoc::orderBy('created_at', 'asc')->paginate(5);
+        $course = Course::orderBy('created_at', 'asc')->paginate(5);
         return view('course.index', compact('course'));
     }
 
@@ -30,7 +30,7 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "name" => "required|unique:khoahocs,name",
+            "name" => "required|unique:courses,name",
         ], [
             "name.required" => "Please enter name",
             "name.unique" => "Name already exists",
@@ -38,7 +38,7 @@ class CourseController extends Controller
 
         $data = $request->all();
 
-        Khoahoc::create($data);
+        Course::create($data);
         return redirect()->route('course.index')->with('success', 'Course added successfully');
     }
 
@@ -47,7 +47,7 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        $course = Khoahoc::findOrFail($id);
+        $course = Course::findOrFail($id);
         return view('course.show', compact('course'));
     }
 
@@ -56,7 +56,7 @@ class CourseController extends Controller
      */
     public function edit(string $id)
     {
-        $course = Khoahoc::findOrFail($id);
+        $course = Course::findOrFail($id);
         return view('course.edit', compact('course'));
     }
 
@@ -66,14 +66,14 @@ class CourseController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            "name" => "required|unique:khoahocs,name,".$id,
+            "name" => "required|unique:courses,name," . $id,
         ], [
             "name.required" => "Please enter name",
             "name.unique" => "Name already exists",
         ]);
 
         $data = $request->all();
-        $course = Khoahoc::findOrFail($id);
+        $course = Course::findOrFail($id);
         $course->update($data);
         return redirect()->route('course.index')->with('success', 'Course updated successfully');
     }
@@ -83,17 +83,17 @@ class CourseController extends Controller
      */
     public function destroy(string $id)
     {
-        $course = Khoahoc::findOrFail($id);
+        $course = Course::findOrFail($id);
         $course->delete();
         return redirect()->route('course.index')->with('success', 'Course deleted successfully');
     }
     public function search(Request $request)
     {
-    $searchTerm = $request->input('search'); // Lấy giá trị từ ô tìm kiếm
+        $searchTerm = $request->input('search'); // Lấy giá trị từ ô tìm kiếm
 
-    // Thực hiện tìm kiếm theo tên (name)
-    $course = Khoahoc::where('name', 'like', '%' . $searchTerm . '%')->paginate(5);
+        // Thực hiện tìm kiếm theo tên (name)
+        $course = Course::where('name', 'like', '%' . $searchTerm . '%')->paginate(5);
 
-    return view('course.index', compact('course'));
+        return view('course.index', compact('course'));
     }
 }

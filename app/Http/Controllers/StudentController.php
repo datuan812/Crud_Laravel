@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Khoahoc;
-use App\Models\Lophoc;
-use App\Models\Sinhvien;
+use App\Models\Clas;
+use App\Models\Course;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,7 +12,8 @@ class StudentController extends Controller
 {
     protected $student;
 
-    public function __construct(Sinhvien $student){
+    public function __construct(Student $student)
+    {
         $this->student = $student;
     }
 
@@ -20,7 +21,7 @@ class StudentController extends Controller
     public function index()
     {
 
-        $students = Sinhvien::with(['classes', 'courses'])->latest('id')->paginate(5);
+        $students = Student::with(['classes', 'courses'])->latest('id')->paginate(5);
 
         return view('student.index', compact('students'));
     }
@@ -30,9 +31,9 @@ class StudentController extends Controller
      */
     public function create()
     {
-        $lophocs = Lophoc::all();
-        $khoahocs = Khoahoc::all();
-        return view('student.create', compact('lophocs', 'khoahocs'));
+        $class = Clas::all();
+        $courses = Course::all();
+        return view('student.create', compact('class', 'courses'));
     }
 
     /**
@@ -42,11 +43,11 @@ class StudentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email|unique:sinhviens',
+            'email' => 'required|email|unique:students',
             'phone' => [
                 'required',
                 'regex:/^[0-9]{10}$/',
-                'unique:sinhviens,phone'
+                'unique:students,phone'
             ],
             'address' => 'required',
         ], [
@@ -60,7 +61,6 @@ class StudentController extends Controller
             'address.required' => 'Please enter address',
         ]);
 
-        // Kiểm tra nếu validator không hợp lệ
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -69,7 +69,7 @@ class StudentController extends Controller
 
         $data = $request->all();
 
-        $student = Sinhvien::create($data);
+        $student = Student::create($data);
 
         return redirect()->route('student.index')->with('success', 'Student added successfully');
     }
@@ -79,7 +79,7 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        $student = Sinhvien::findOrFail($id);
+        $student = Student::findOrFail($id);
 
         return view('student.show', compact('student'));
     }
@@ -89,12 +89,12 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
-        $student = Sinhvien::findOrFail($id);
+        $student = Student::findOrFail($id);
 
-        $lophocs = Lophoc::all();
-        $khoahocs = Khoahoc::all();
+        $class = Clas::all();
+        $courses = Course::all();
 
-        return view('student.edit', compact('student', 'lophocs', 'khoahocs'));
+        return view('student.edit', compact('student', 'class', 'courses'));
     }
 
     /**
@@ -104,11 +104,11 @@ class StudentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email|unique:sinhviens,email,'.$id.',id',
+            'email' => 'required|email|unique:students,email,' . $id . ',id',
             'phone' => [
                 'required',
                 'regex:/^[0-9]{10}$/',
-                'unique:sinhviens,phone,'.$id.',id'
+                'unique:students,phone,' . $id . ',id'
             ],
             'address' => 'required',
         ], [
@@ -122,7 +122,6 @@ class StudentController extends Controller
             'address.required' => 'Please enter address',
         ]);
 
-        // Kiểm tra nếu validator không hợp lệ
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -131,7 +130,7 @@ class StudentController extends Controller
 
         $data = $request->all();
 
-        $student = Sinhvien::findOrFail($id);
+        $student = Student::findOrFail($id);
 
         $student->update($data);
 
@@ -143,18 +142,18 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        $student = Sinhvien::findOrFail($id);
+        $student = Student::findOrFail($id);
         $student->delete();
         return redirect()->route('student.index')->with('success', 'Student deleted successfully');
     }
 
     public function search(Request $request)
-{
-    $searchTerm = $request->input('search'); // Lấy giá trị từ ô tìm kiếm
+    {
+        $searchTerm = $request->input('search'); // Lấy giá trị từ ô tìm kiếm
 
-    // Thực hiện tìm kiếm theo tên (name)
-    $students = Sinhvien::where('name', 'like', '%' . $searchTerm . '%')->paginate(5);
+        // Thực hiện tìm kiếm theo tên (name)
+        $students = Student::where('name', 'like', '%' . $searchTerm . '%')->paginate(5);
 
-    return view('student.index', compact('students'));
-}
+        return view('student.index', compact('students'));
+    }
 }
